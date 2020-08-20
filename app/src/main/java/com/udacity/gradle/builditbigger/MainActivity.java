@@ -1,10 +1,8 @@
 package com.udacity.gradle.builditbigger;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +17,8 @@ import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 import com.udacity.gradle.builditbigger.backend.myApi.model.MyBean;
 
 import java.io.IOException;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -57,19 +57,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayRandomJoke(View view) {
-        new FetchJokeTask().execute(this);
+        new FetchJokeTask().execute();
         Intent intent = new Intent(MainActivity.this, DisplayJokeActivity.class);
         intent.putExtra("randomJoke", joke);
         startActivity(intent);
     }
 
-    public class FetchJokeTask extends AsyncTask<Context, Void, String> {
+    public class FetchJokeTask extends AsyncTask<Void, Void, String> {
 
         private MyApi myApiService = null;
-        private Context context;
 
         @Override
-        protected String doInBackground(Context... contexts) {
+        protected String doInBackground(Void... voids) {
             if (myApiService == null) {
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                         new AndroidJsonFactory(), null)
@@ -83,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 myApiService = builder.build();
             }
 
-            context = contexts[0];
             try {
                 return myApiService.fetchJokes(new MyBean()).execute().getJoke();
             } catch (IOException e) {
